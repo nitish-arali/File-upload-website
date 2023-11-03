@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Create Folder and Upload Images</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+  </head>
+  <body>
+    <h1>Create Folder and Upload Images</h1>
+    <form id="upload-form" enctype="multipart/form-data" action="javascript:void(0);" onsubmit="uploadImages()">
+        <!-- Input field for folder name -->
+        <label for="folder-name">Folder Name:</label>
+        <input type="text" id="folder-name" required><br>
+
+        <!-- Upload Image Files (accept various image formats) -->
+        <label for="image1">Image 1:</label>
+        <input type="file" id="image1" accept="image/*" required><br>
+
+        <label for="image2">Image 2:</label>
+        <input type="file" id="image2" accept="image/*" required><br>
+
+        <label for="image3">Image 3:</label>
+        <input type="file" id="image3" accept="image/*" required><br>
+
+        <input type="submit" value="Create Folder and Upload Images">
+    </form>
+
+    <div id="loader" style="display: none;">Loading...</div> <!-- Add this loader element -->
+
+    <div id="error-message" style="color: red;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+      function uploadImages() {
+        // Show a loader while the API call is in progress
+        showLoader();
+
+        // Reset error message
+        document.getElementById("error-message").textContent = "";
+
+        // Collect user input
+        var folderName = document.getElementById("folder-name").value;
+        var image1 = document.getElementById("image1").files[0];
+        var image2 = document.getElementById("image2").files[0];
+        var image3 = document.getElementById("image3").files[0];
+
+        // Create a new FormData object to send data to the server
+        var formData = new FormData();
+        formData.append("folderName", folderName);
+        formData.append("image1", image1);
+        formData.append("image2", image2);
+        formData.append("image3", image3);
+
+        // Make an API call using the Fetch API
+        fetch(
+          "https://script.google.com/macros/s/AKfycbx9195ZhxXPbfu3s1XffB7TAxxBes_0W1YlQhg9itIvGvPxk9WqLpx7hE8bctUPcKqGwg/exec",
+          {
+            method: "POST",
+            body: formData,
+          }
+        )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Hide the loader
+            hideLoader();
+
+            // Show a success message using Toastify
+            Toastify({
+              text: "Images uploaded successfully",
+              backgroundColor: "green",
+              duration: 3000,
+            }).show();
+          })
+          .catch((error) => {
+            // Hide the loader
+            hideLoader();
+
+            // Show an error message using Toastify
+            Toastify({
+              text: "API Error: " + error.message,
+              backgroundColor: "red",
+              duration: 3000,
+            }).show();
+
+            // Display the error message in the HTML as well
+            document.getElementById("error-message").textContent =
+              error.message;
+          });
+      }
+
+      function showLoader() {
+        // You can implement your own loader logic, e.g., display a loading spinner
+        // Here's a simple example with a "Loading..." message
+        document.getElementById("loader").textContent = "Loading...";
+      }
+
+      function hideLoader() {
+        // Hide the loader
+        document.getElementById("loader").textContent = "";
+      }
+    </script>
+  </body>
+</html>
